@@ -97,9 +97,12 @@ namespace CreditCards.UITests
         {
             using (IWebDriver driver = new ChromeDriver())
             {
+                output.WriteLine($"{DateTime.Now.ToLongTimeString()} Navigating to {homeUrl}");
+                driver.Navigate().GoToUrl(homeUrl);
                 output.WriteLine($"{DateTime.Now.ToLongTimeString()} Setting implicit wait");
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(35);
 
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(35));
                 Func<IWebDriver, IWebElement> findEnabledAndVisible = delegate (IWebDriver d)
                 {
                     var e = d.FindElement(By.ClassName("customer-service-apply-now"));
@@ -113,9 +116,11 @@ namespace CreditCards.UITests
                     {
                         return e;
                     }
+                    throw new NotFoundException(); 
                 };
 
-
+                IWebElement applyLink = 
+                    wait.Until(findEnabledAndVisible); 
 
 
 
@@ -128,10 +133,10 @@ namespace CreditCards.UITests
                 carouselNext.Click();
                 DemoHelper.Pause(1000);
                 carouselNext.Click();
-                DemoHelper.Pause(1000);*/
+                DemoHelper.Pause(1000);
 
                 output.WriteLine($"{DateTime.Now.ToLongTimeString()} Finding element");
-                IWebElement applyLink = driver.FindElement(By.ClassName("customer-service-apply-now"));
+                IWebElement applyLink = driver.FindElement(By.ClassName("customer-service-apply-now"));*/
                 output.WriteLine($"{DateTime.Now.ToLongTimeString()} Found element Displayed={applyLink.Displayed} Enabled={applyLink.Enabled}");
                 applyLink.Click();
 
@@ -200,6 +205,56 @@ namespace CreditCards.UITests
                 Assert.Equal("Credit Card Application - Credit Cards", driver.Title);
                 Assert.Equal(ApplyUrl, driver.Url);
 
+            }
+        }
+        [Fact]
+        public void BeSubmittedWhenValid()
+        {
+            using (IWebDriver driver = new ChromeDriver())
+            {
+
+                driver.Navigate().GoToUrl(ApplyUrl);
+
+                /* First method to write IWebElement firstNameField = driver.FindElement(By.Id("FirstName"));
+                firstNameField.SendKeys("Sarah"); */
+                driver.FindElement(By.Id("FirstName")).SendKeys("Sarah");
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("LastName")).SendKeys("Wooojcik");
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("FrequentFlyerNumber")).SendKeys("123456-A");
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("Age")).SendKeys("22");
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("GrossAnnualIncome")).SendKeys("50000");
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("Single")).Click();
+                
+
+                IWebElement businessSourceSelectElement =
+                    driver.FindElement(By.Id("BusinessSource"));
+                SelectElement businessSource = new SelectElement(businessSourceSelectElement);
+                //Check default selected option is correct 
+                Assert.Equal("I'd Rather Not Say", businessSource.SelectedOption.Text);
+
+                foreach(IWebElement option in businessSource.Options)
+                {
+                    output.WriteLine($"Vaule: {option.GetAttribute("value")} Text: {option.Text}");
+                }
+                //Select an option 
+                businessSource.SelectByValue("Email");
+                DemoHelper.Pause();
+                businessSource.SelectByText("Internet Search"); 
+                DemoHelper.Pause();
+                businessSource.SelectByIndex(4); //Zero Based indexing 
+                DemoHelper.Pause();
+                driver.FindElement(By.Id("TermsAccepted")).Click();
+
+                //driver.FindElement(By.Id("SubmitApplication")).Click(); First the most basic application submit
+                driver.FindElement(By.Id("GrossAnnualIncome")).Submit(); 
+
+                Assert.StartsWith("RefferedToHuman",driver.FindElement(By.Id))
+
+                
             }
         }
 
