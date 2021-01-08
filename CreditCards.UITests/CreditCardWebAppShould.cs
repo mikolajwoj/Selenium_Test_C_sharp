@@ -13,7 +13,7 @@ namespace CreditCards.UITests
         private const string homeTitle = "Home Page - Credit Cards";
         [Fact]
         [Trait("Category", "Smoke")]
-        public void LoadApplicationPage()
+        public void LoadHomePage()
         {
             using (IWebDriver driver = new ChromeDriver())
             {
@@ -35,9 +35,22 @@ namespace CreditCards.UITests
             {
                 driver.Navigate().GoToUrl(homeUrl);
 
+                driver.Manage().Window.Maximize(); 
                 DemoHelper.Pause();
+                driver.Manage().Window.Minimize();
+                DemoHelper.Pause();
+                driver.Manage().Window.Size = new System.Drawing.Size(300, 400);
+                DemoHelper.Pause();
+                driver.Manage().Window.Position = new System.Drawing.Point(1, 1);
+                DemoHelper.Pause();
+                driver.Manage().Window.Position = new System.Drawing.Point(50, 50);
+                DemoHelper.Pause();
+                driver.Manage().Window.Position = new System.Drawing.Point(100, 100);
+                DemoHelper.Pause();
+                driver.Manage().Window.FullScreen();
 
-                driver.Navigate().Refresh();
+                DemoHelper.Pause(5000); 
+
                 Assert.Equal(homeTitle, driver.Title);
                 Assert.Equal(homeUrl, driver.Url);
 
@@ -120,6 +133,27 @@ namespace CreditCards.UITests
                 //TODO: Verify corectness of another element ;) 
             }
         }
+        [Fact]
+        
+        public void OpenContactFooterLinkInNewTab()
+        {
+            using (IWebDriver driver = new ChromeDriver())
+            {
+                driver.Navigate().GoToUrl(homeUrl);
+
+                driver.FindElement(By.Id("ContactFooter")).Click();
+                DemoHelper.Pause();
+                ReadOnlyCollection<string> allTabs = driver.WindowHandles;
+                string homePageTab = allTabs[0];
+                string contactTab = allTabs[1];
+
+                driver.SwitchTo().Window(contactTab);
+                DemoHelper.Pause(); 
+                Assert.EndsWith("/Home/Contact",driver.Url); 
+
+            }
+        }
+
 
     }
 }

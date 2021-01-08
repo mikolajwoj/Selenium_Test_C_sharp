@@ -73,9 +73,9 @@ namespace CreditCards.UITests
         {
             using (IWebDriver driver = new ChromeDriver())
             {
-
+                driver.Manage().Window.Minimize();
                 driver.Navigate().GoToUrl(homeUrl);
-
+                
                 DemoHelper.Pause();
 
                 WebDriverWait wait =
@@ -252,7 +252,7 @@ namespace CreditCards.UITests
                 //driver.FindElement(By.Id("SubmitApplication")).Click(); First the most basic application submit
                 driver.FindElement(By.Id("GrossAnnualIncome")).Submit(); 
 
-                Assert.StartsWith("RefferedToHuman",driver.FindElement(By.Id))
+                //Assert.StartsWith("RefferedToHuman",driver.FindElement(By.Id))
 
                 
             }
